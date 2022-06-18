@@ -1,0 +1,8 @@
+export enum ActionType {
+  LOGIN = 'LOGIN',
+  LOGOUT = 'LOGOUT',
+  RETRIVE = 'RETRIVE',
+  ADD_DEVICE = 'ADD_DEVICE',
+  REMOVE_DEVICE = 'REMOVE_DEVICE',
+  SCHEDULE = 'SCHEDULE',
+}

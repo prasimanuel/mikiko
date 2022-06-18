@@ -1,0 +1,64 @@
+{
+  "project_info": {
+    "project_number": "239894239921",
+    "firebase_url": "https://mikikov1-default-rtdb.firebaseio.com",
+    "project_id": "mikikov1",
+    "storage_bucket": "mikikov1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239894239921:android:a83ea24a7d3491de8e2090",
+        "android_client_info": {
+          "package_name": "com.mikikov1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239894239921-avm2tu1efvo9se1vlnitq7ul3ecmvb4c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mikikov1",
+            "certificate_hash": "ee0bab4f3e69e93576c65be94ce82b306b4124be"
+          }
+        },
+        {
+          "client_id": "239894239921-gprjvkh1nh1usgrm9g24065diaka9odb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mikikov1",
+            "certificate_hash": "510540471809dc1ecae8995d2a970dd26e841adb"
+          }
+        },
+        {
+          "client_id": "239894239921-q22r0pdl941vjgb5or6ms2a2a410cek7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mikikov1",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "239894239921-t9oikekptv4vodlk3ecvln6lqe2h6g62.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrtu0ZNYwh-rrG8TKplC0Sjlku7QTnOkY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239894239921-t9oikekptv4vodlk3ecvln6lqe2h6g62.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
