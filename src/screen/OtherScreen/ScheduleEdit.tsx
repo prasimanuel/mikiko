@@ -45,6 +45,8 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
     timesplit = timesplit.split(':');
     // timesplit = timesplit[4].split(':');
 
+    console.log(timesplit);
+
     timeSet(`${timesplit[0]}:${timesplit[1]}`);
 
     showSet(false);
