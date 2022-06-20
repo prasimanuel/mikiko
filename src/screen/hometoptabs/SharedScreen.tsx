@@ -38,13 +38,15 @@ const SharedScreen = ({navigation}: Nav) => {
         <FlatList
           data={state?.device}
           renderItem={item => {
-            const {gardenName, id, location}: AuthContexDeviceArray = item.item;
+            const {gardenName, id, location, model}: AuthContexDeviceArray =
+              item.item;
             return (
               <DeviceList
                 gardenName={gardenName}
                 id={id}
                 location={location}
                 shared={true}
+                model={model}
               />
             );
           }}

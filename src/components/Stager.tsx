@@ -25,9 +25,17 @@ interface Props {
   gardenName: string;
   shared?: boolean;
   version?: string;
+  model: string;
 }
 
-const StaggerView = ({id, location, gardenName, shared, version}: Props) => {
+const StaggerView = ({
+  id,
+  location,
+  gardenName,
+  shared,
+  version,
+  model,
+}: Props) => {
   const Nav: any = useNavigation();
 
   const state = useSelector((state: ReducerRootState) => state);
@@ -37,7 +45,7 @@ const StaggerView = ({id, location, gardenName, shared, version}: Props) => {
 
   const generateQRCode = () => {
     Aes.encrypt(
-      `${id}&${gardenName}&${location}&PMK2022`,
+      `${id}&${gardenName}&${location}&${model}&PMK2022`,
       AES_KEY,
       AES_IV,
       'aes-256-cbc',

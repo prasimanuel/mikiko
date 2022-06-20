@@ -13,7 +13,7 @@ import {Vibration} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import StaggerView from './Stager';
-import MQTT, { IMqttClient } from 'sp-react-native-mqtt';
+import MQTT, {IMqttClient} from 'sp-react-native-mqtt';
 import {useNavigation} from '@react-navigation/native';
 import {
   BG_BOX_DARK,
@@ -36,13 +36,14 @@ interface Props {
   location: string;
   id: string;
   shared?: boolean;
+  model: string;
 }
 
-var MQTTClient : IMqttClient;
+var MQTTClient: IMqttClient;
 
 // type nav = StackScreenProps<HomeStackParams>;
 
-const DeviceList = ({gardenName, location, id, shared}: Props) => {
+const DeviceList = ({gardenName, location, id, shared, model}: Props) => {
   const navigation = useNavigation<any>();
 
   const [isLoading, isLoadingSet] = useState(true);
@@ -246,6 +247,7 @@ const DeviceList = ({gardenName, location, id, shared}: Props) => {
                 location={location}
                 shared={shared}
                 version={firmwareVersion}
+                model={model}
               />
             ) : null}
           </HStack>

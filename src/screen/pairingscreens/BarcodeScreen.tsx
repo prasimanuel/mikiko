@@ -28,6 +28,7 @@ const BarcodeScreen = ({navigation}: Nav) => {
           location: strData[2],
           gardenName: strData[1],
           scene: 'shared',
+          model: strData[3],
         };
         AddDevice(newDevices);
         navigation.navigate('Home');

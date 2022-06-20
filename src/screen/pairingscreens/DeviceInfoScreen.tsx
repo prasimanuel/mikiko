@@ -180,9 +180,7 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
               <Select.Item value="other" label="Other" />
             </Select>
           </FormControl>
-        ) : null}
-
-        {mode == 'CAM' ? (
+        ) : (
           <FormControl mt={5}>
             <FormControl.Label
               _text={{
@@ -206,7 +204,33 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
               })}
             </Select>
           </FormControl>
-        ) : null}
+        )}
+
+        {/* {mode == 'CAM' ? (
+          <FormControl mt={5}>
+            <FormControl.Label
+              _text={{
+                _light: {color: BG_DARK},
+                _dark: {color: FONT_INACTIVE_DARK},
+              }}>
+              Device bind
+            </FormControl.Label>
+
+            <Select
+              placeholder="Choose Scene"
+              selectedValue={camId}
+              height={TAB_BAR_HEIGHT}
+              onValueChange={val => camIdSet(val)}
+              _selectedItem={{
+                bg: 'teal.600',
+                endIcon: <CheckIcon size="5" />,
+              }}>
+              {devices?.map(item => {
+                return <Select.Item value={item.id} label={item.gardenName} />;
+              })}
+            </Select>
+          </FormControl>
+        ) : null} */}
 
         <FormControl mt={5}>
           <FormControl.Label
@@ -299,6 +323,9 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
                     location: location,
                     id: bssid,
                     scene: scene,
+                    model: mode,
+                    actions: [],
+                    schedule: [],
                   })
                   .then(() => {
                     console.log('User added!');

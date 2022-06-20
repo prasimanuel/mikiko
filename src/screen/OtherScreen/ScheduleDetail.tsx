@@ -21,6 +21,7 @@ import {
   PRIMARY_COLOR,
   SECONDARY_COLOR,
 } from '../../utils/constanta';
+import firestore from '@react-native-firebase/firestore';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
@@ -45,24 +46,17 @@ var channel5: Array<any> = [];
 const ScheduleDetail = ({navigation, route}: Nav) => {
   const state = useSelector((state: ReducerRootState) => state);
 
-  const {Schedule} = useContext(AuthContex);
+  // const {Schedule} = useContext(AuthContex);
   const [show, showSet] = useState<boolean>(false);
   const [time, timeSet] = useState<string>(
     `${splitTime[0]}${splitTime[1]}:${splitTime[3]}${splitTime[4]}`,
   );
-  const [btn, btnSet] = useState<string>('btnone');
+  const [btn, btnSet] = useState<string>('out1');
   const [duration, durationSet] = useState<string>('1');
-  const [day, daySet] = useState<string>('mon');
+  const [day, daySet] = useState<string>('7');
   const [status, statusSet] = useState<boolean>(true);
 
   const id: string = route?.params?.id;
-  const mode: string = route?.params?.mode;
-  const _id: string = route?.params?._id;
-  const _time: string = route?.params?._time;
-  const _btn: string = route?.params?._btn;
-  const _duration: string = route?.params?._duration;
-  const _day: string = route?.params?._day;
-  const _status: boolean = route?.params?._status;
 
   useLayoutEffect(() => {
     mqtt
@@ -100,16 +94,6 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
       .catch(function (err) {
         console.log(err);
       });
-  }, []);
-
-  useEffect(() => {
-    if (mode == 'edit') {
-      timeSet(_time);
-      durationSet(_duration);
-      daySet(_day);
-      statusSet(_status);
-      btnSet(_btn);
-    }
   }, []);
 
   const handleConfirm = time => {
@@ -166,7 +150,6 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           Button
         </Text>
         <Select
-          isDisabled={mode == 'edit' ? true : false}
           selectedValue={btn}
           minWidth="200"
           accessibilityLabel="Choose Button"
@@ -177,11 +160,11 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           }}
           mt={1}
           onValueChange={val => btnSet(val)}>
-          <Select.Item label="Switch 1" value="btnone" />
-          <Select.Item label="Switch 2" value="btntwo" />
-          <Select.Item label="Switch 3" value="btnthree" />
-          <Select.Item label="Switch 4" value="btnfour" />
-          <Select.Item label="Switch 5" value="btnfive" />
+          <Select.Item label="Switch 1" value="out1" />
+          <Select.Item label="Switch 2" value="out2" />
+          <Select.Item label="Switch 3" value="out3" />
+          <Select.Item label="Switch 4" value="out4" />
+          <Select.Item label="Switch 5" value="out5" />
         </Select>
       </HStack>
 
@@ -298,7 +281,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           Every
         </Text>
         <Radio.Group
-          defaultValue="mon"
+          defaultValue="7"
           name="myRadioGroup"
           onChange={val => {
             daySet(val);
@@ -311,7 +294,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="mon"
+                value="7"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -323,7 +306,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="sun"
+                value="1"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -335,7 +318,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="tue"
+                value="2"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -347,7 +330,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="wed"
+                value="3"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -361,7 +344,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="thu"
+                value="4"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -373,7 +356,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="fri"
+                value="5"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -385,7 +368,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="sat"
+                value="6"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -397,7 +380,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="day"
+                value="8"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -436,84 +419,28 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
         mt={ITEM_HEIGHT_H3}
         bg={PRIMARY_COLOR}
         onPress={() => {
-          if (mode == 'edit') {
-            const newDevice = state.schedule.filter(res => {
-              return res.id == _id;
+          var newSchedule: SchedulParams = {
+            output: btn,
+            duration: Number(duration),
+            every: Number(day),
+            status: status,
+            id: Math.random().toString(),
+            time,
+          };
+
+          // Schedule(newSchedule);
+
+          firestore()
+            .collection(
+              state.auth.email !== null ? state.auth.email : state.auth.uid,
+            )
+            .doc(id)
+            .update({
+              schedule: firestore.FieldValue.arrayUnion(newSchedule),
+            })
+            .then(() => {
+              console.log('User added!');
             });
-          } else {
-            var newSchedule: SchedulParams = {
-              btn: btn,
-              duration: duration,
-              every: day,
-              status: status,
-              id: Math.random().toString(),
-              time,
-            };
-
-            Schedule(newSchedule);
-
-            if (btn == 'btnone') {
-              try {
-                channel1 = [...channel1, newSchedule];
-              } catch (e) {
-                console.log(e);
-              }
-              MQTTClient.publish(
-                `/${id}/schedule/btnone`,
-                JSON.stringify(channel1),
-                0,
-                true,
-              );
-            } else if (btn == 'btntwo') {
-              try {
-                channel2 = [...channel2, newSchedule];
-              } catch (e) {
-                console.log(e);
-              }
-              MQTTClient.publish(
-                `/${id}/schedule/btntwo`,
-                JSON.stringify(channel2),
-                0,
-                true,
-              );
-            } else if (btn == 'btnthree') {
-              try {
-                channel3 = [...channel3, newSchedule];
-              } catch (e) {
-                console.log(e);
-              }
-              MQTTClient.publish(
-                `/${id}/schedule/btnthree`,
-                JSON.stringify(channel3),
-                0,
-                true,
-              );
-            } else if (btn == 'btnfour') {
-              try {
-                channel4 = [...channel4, newSchedule];
-              } catch (e) {
-                console.log(e);
-              }
-              MQTTClient.publish(
-                `/${id}/schedule/btnfour`,
-                JSON.stringify(channel4),
-                0,
-                true,
-              );
-            } else if (btn == 'btnfive') {
-              try {
-                channel5 = [...channel5, newSchedule];
-              } catch (e) {
-                console.log(e);
-              }
-              MQTTClient.publish(
-                `/${id}/schedule/btnfive`,
-                JSON.stringify(channel5),
-                0,
-                true,
-              );
-            }
-          }
 
           navigation.goBack();
         }}

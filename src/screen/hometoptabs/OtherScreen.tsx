@@ -20,8 +20,6 @@ import {
 } from '../../utils/constanta';
 import {deviceList} from './GreenHouseScreen';
 import {LogBox} from 'react-native';
-import AuthContex from '../../route/AuthContext';
-import RNEsptouch from 'react-native-esptouch2';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -70,6 +68,7 @@ const OtherScreen = ({navigation}: Nav) => {
                     id={item.id}
                     location={item.location}
                     shared={false}
+                    model={item.model}
                   />
                 ) : null}
               </Box>

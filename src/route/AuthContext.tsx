@@ -29,14 +29,15 @@ export interface AuthContexDeviceArray {
   gardenName: string;
   location: string;
   scene?: string;
+  model: string;
 }
 
 export interface SchedulParams {
   id: string;
-  btn: string;
+  output: string;
   time: string;
-  duration: string;
-  every: string;
+  duration: number;
+  every: number;
   status: boolean;
 }
 

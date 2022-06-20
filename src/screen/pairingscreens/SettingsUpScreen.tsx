@@ -24,10 +24,14 @@ import {
   PRIMARY_COLOR,
 } from '../../utils/constanta';
 import ModalAlert from '../../components/ModalAlert';
+import {useSelector} from 'react-redux';
+import {ReducerRootState} from '../../redux/Reducer';
 
 type Nav = StackScreenProps<PairingParams>;
 
 const SettingsUpScreen = ({navigation, route}: Nav) => {
+  const state = useSelector((state: ReducerRootState) => state);
+
   const [show, setShow] = useState<boolean>(false);
   const [hasUnsavedChanges, hasUnsavedChangesSet] = useState<boolean>(true);
   const [esptouch, esptouchSet] = useState<boolean>(true);
@@ -99,7 +103,7 @@ const SettingsUpScreen = ({navigation, route}: Nav) => {
       socket.once('listening', function () {
         myInterval = setInterval(() => {
           socket.send(
-            bssid, // message sent
+            state.auth.email !== null ? state.auth.email : state.auth.uid, // message sent
             undefined,
             undefined,
             2255,

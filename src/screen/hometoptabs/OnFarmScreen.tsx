@@ -92,6 +92,7 @@ const OnFarmScreen = ({navigation}: Nav) => {
                     id={item.id}
                     location={item.location}
                     shared={false}
+                    model={item.model}
                   />
                 ) : // </Pressable>
                 null}
