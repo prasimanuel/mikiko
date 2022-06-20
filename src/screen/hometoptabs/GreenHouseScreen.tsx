@@ -35,6 +35,7 @@ export type deviceList = {
   id: string;
   location: string;
   scene: string;
+  model: string;
 };
 
 const GreenHouseScreen = ({navigation}: Nav) => {
@@ -98,6 +99,7 @@ const GreenHouseScreen = ({navigation}: Nav) => {
                     id={item.id}
                     location={item.location}
                     shared={false}
+                    model={item.model}
                   />
                 ) : // </Pressable>
                 null}
