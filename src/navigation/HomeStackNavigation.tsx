@@ -19,6 +19,7 @@ import ScheduleScreen from '../screen/OtherScreen/ScheduleScreen';
 import ScheduleDetail from '../screen/OtherScreen/ScheduleDetail';
 import ActionScreen from '../screen/OtherScreen/ActionScreen';
 import ActionDetail from '../screen/OtherScreen/ActionDetail';
+import ScheduleEdit from '../screen/OtherScreen/ScheduleEdit';
 
 export type HomeStackParams = {
   Homebase;
@@ -27,6 +28,7 @@ export type HomeStackParams = {
   Toptabsbase;
   Schedule;
   Scheduledetail;
+  Scheduleedit;
   Bottomtabsbase;
   Shareimage;
   Firmware;
@@ -74,6 +76,11 @@ const HomeStackNavigation = () => {
         name="Scheduledetail"
         component={ScheduleDetail}
         options={{title: 'Schedule'}}
+      />
+      <Stack.Screen
+        name="Scheduleedit"
+        component={ScheduleEdit}
+        options={{title: 'Edit'}}
       />
       <Stack.Screen name="Action" component={ActionScreen} />
       <Stack.Screen

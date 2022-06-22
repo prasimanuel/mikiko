@@ -1,5 +1,5 @@
 import {AlertDialog, Box, Button, Icon} from 'native-base';
-import React from 'react';
+import React, {ReactNode} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {FONT_INACTIVE_DARK} from '../utils/constanta';
 
@@ -11,6 +11,7 @@ type Props = {
   onCancel: () => void;
   variant?: 'warning' | 'error' | 'success' | 'info';
   schema: 'trash-can' | 'check';
+  children?: ReactNode;
 };
 
 const ModalAlert = ({
@@ -21,6 +22,7 @@ const ModalAlert = ({
   onPress,
   schema,
   onCancel,
+  children,
 }: Props) => {
   const cancelRef = React.useRef(null);
   return (
@@ -37,6 +39,7 @@ const ModalAlert = ({
           </AlertDialog.Header>
           <AlertDialog.Body _text={{_dark: {color: FONT_INACTIVE_DARK}}}>
             {message}
+            <Box width={'100%'}>{children}</Box>
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <Button.Group space={2} alignItems="center">

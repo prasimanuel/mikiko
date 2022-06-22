@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {Box, Icon, Menu} from 'native-base';
+import {Box, Checkbox, Icon, Menu} from 'native-base';
 import React, {useContext, useState} from 'react';
 import {Pressable, NativeModules} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,13 +7,17 @@ import RNQRGenerator from 'rn-qr-generator';
 import {
   AES_IV,
   AES_KEY,
+  BG_BOX_DARK,
+  BG_LIGHT,
   FONT_ACTIVE_LIGHT,
   FONT_INACTIVE_DARK,
   FONT_SUB,
   ITEM_WIDTH_H2,
+  PRIMARY_COLOR,
 } from '../utils/constanta';
 import AuthContex from '../route/AuthContext';
 import ModalAlert from './ModalAlert';
+import database from '@react-native-firebase/database';
 import firestore from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
 import {ReducerRootState} from '../redux/Reducer';
@@ -42,6 +46,7 @@ const StaggerView = ({
 
   const {RemoveDevice} = useContext(AuthContex);
   const [show, setShow] = useState(false);
+  const [check, checkSet] = useState<boolean>(true);
 
   const generateQRCode = () => {
     Aes.encrypt(
@@ -94,8 +99,6 @@ const StaggerView = ({
         </Menu.Item>
         <Menu.Item
           _text={{fontSize: FONT_SUB}}
-          // isDisabled={shared ? false : true}
-
           onPress={() => {
             Nav.navigate('Firmware', {
               id,
@@ -104,19 +107,10 @@ const StaggerView = ({
           }}>
           Update Firmware
         </Menu.Item>
-        <Menu.Item
-          // isDisabled={shared ? false : true}
-
-          _text={{fontSize: FONT_SUB}}
-          onPress={generateQRCode}>
+        <Menu.Item _text={{fontSize: FONT_SUB}} onPress={generateQRCode}>
           QR Code
         </Menu.Item>
-        <Menu.Item
-          _text={{fontSize: FONT_SUB}}
-          // isDisabled={shared ? false : true}
-        >
-          Edit
-        </Menu.Item>
+        <Menu.Item _text={{fontSize: FONT_SUB}}>Edit</Menu.Item>
       </Menu>
       {/* alert */}
       <ModalAlert
@@ -124,7 +118,7 @@ const StaggerView = ({
         schema="trash-can"
         title="Delete Device ?"
         message="Are you sure delete this device ?"
-        onPress={() => {
+        onPress={async () => {
           if (shared) {
             RemoveDevice(id);
           } else {
@@ -137,14 +131,35 @@ const StaggerView = ({
               .then(() => {
                 console.log('User deleted!');
               });
+
+            if (check == true) {
+              await database().ref(`${id}/Sensor`).remove();
+            }
           }
 
           setShow(false);
         }}
         onCancel={() => {
           setShow(false);
-        }}
-      />
+        }}>
+        <Checkbox
+          mt={5}
+          _dark={{bg: BG_BOX_DARK, borderColor: FONT_INACTIVE_DARK}}
+          _light={{bg: BG_LIGHT}}
+          _checked={{
+            backgroundColor: PRIMARY_COLOR,
+            borderColor: PRIMARY_COLOR,
+          }}
+          size={'sm'}
+          value="data"
+          isChecked={check}
+          _text={{fontSize: FONT_SUB, _dark: {color: FONT_INACTIVE_DARK}}}
+          onChange={() => {
+            checkSet(prev => !prev);
+          }}>
+          Delete data ?
+        </Checkbox>
+      </ModalAlert>
       {/* end alert */}
     </Box>
   );

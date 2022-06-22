@@ -41,6 +41,16 @@ export interface SchedulParams {
   status: boolean;
 }
 
+export interface ActionsParams {
+  if: string;
+  output: string;
+  value: number;
+  con: string;
+  state: boolean;
+  status: boolean;
+  id: string;
+}
+
 export interface AuthContextProps {
   SignIn: (data?: AuthContexDataObject | any) => void;
   SignOut: () => void;

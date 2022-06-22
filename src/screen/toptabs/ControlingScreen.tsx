@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {Center, Box, Button, VStack, Text, Icon} from 'native-base';
+import {Center, Box, Button, VStack, Text, Icon, Pressable} from 'native-base';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
@@ -184,28 +184,38 @@ const ControlingScreen = ({navigation, route}: Nav) => {
         width={'100%'}
         position="absolute"
         bottom={5}>
-        <Icon
-          as={MaterialCommunityIcons}
-          name="clock-edit-outline"
-          size={12}
+        <Pressable
           onPress={() => {
             navigation.navigate('Action', {
               id: id,
             });
           }}
-          color={PRIMARY_COLOR}
-        />
-        <Icon
-          as={MaterialCommunityIcons}
-          name="alarm"
-          size={12}
+          justifyContent={'center'}
+          alignItems="center">
+          <Icon
+            as={MaterialCommunityIcons}
+            name="clock-edit-outline"
+            size={10}
+            color={PRIMARY_COLOR}
+          />
+          <Text mt={1}>Action</Text>
+        </Pressable>
+        <Pressable
           onPress={() => {
             navigation.navigate('Schedule', {
               id: id,
             });
           }}
-          color={PRIMARY_COLOR}
-        />
+          justifyContent={'center'}
+          alignItems="center">
+          <Icon
+            as={MaterialCommunityIcons}
+            name="alarm"
+            size={10}
+            color={PRIMARY_COLOR}
+          />
+          <Text mt={1}>Schedule</Text>
+        </Pressable>
       </Box>
     </Center>
   );

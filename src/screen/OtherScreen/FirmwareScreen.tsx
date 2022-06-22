@@ -1,7 +1,7 @@
 import {Box, HStack, Icon, Pressable, Text} from 'native-base';
 import React, {useLayoutEffect, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {TAB_BAR_HEIGHT} from '../../utils/constanta';
+import {BG_DARK, BG_LIGHT, TAB_BAR_HEIGHT} from '../../utils/constanta';
 import storage from '@react-native-firebase/storage';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
@@ -16,13 +16,9 @@ var MQTTClient: IMqttClient;
 const FirmwareScreen = ({route, navigation}: Nav) => {
   const [versionUpdate, versionUpdateSet] = useState<boolean>(false);
   const [targetVersion, targetVersionSet] = useState<string>('');
-  const [versionURL, versionURLSet] = useState<string>('');
   const [show, setShow] = useState<boolean>(false);
-  // const [firmwareVersion, firmwareVersionSet] = useState<string>('');
 
   const id = route?.params?.id;
-
-  console.log(id);
 
   useLayoutEffect(() => {
     mqtt
@@ -31,23 +27,13 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
         clientId: `${id}update`,
       })
       .then(function (client) {
-        client.on('closed', function () {
-          // console.log('mqtt.event.closed');
-        });
+        client.on('closed', function () {});
 
-        client.on('error', function (msg) {
-          // console.log('mqtt.event.error', msg);
-        });
+        client.on('error', function (msg) {});
 
-        client.on('message', function (msg) {
-          // console.log('mqtt.event.message', msg);
-          // if (msg.topic == `/${id}/data/firmwareversion`) {
-          //   firmwareVersionSet(msg.data);
-          // }
-        });
+        client.on('message', function (msg) {});
 
         client.on('connect', function () {
-          // client.subscribe(`/${id}/data/firmwareversion`, 0);
           MQTTClient = client;
         });
 
@@ -59,17 +45,13 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
   });
 
   useLayoutEffect(() => {
-    const reference = storage().ref('/esp8266/');
+    const reference = storage().ref('/MTH/');
     reference.listAll().then(res => {
+      console.log('firebase storage ==== ', res.items[0].name);
+
       if (res.items[0].name !== route.params?.version) {
         versionUpdateSet(true);
         targetVersionSet(res.items[0].name.toString());
-        storage()
-          .ref('/esp8266/esp8266.bin')
-          .getDownloadURL()
-          .then(res => {
-            versionURLSet(res);
-          });
       }
     });
   }, []);
@@ -77,7 +59,12 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
   // if (MQTTClient == undefined) return <></>;
 
   return (
-    <Box flex={1} width="100%" px={5}>
+    <Box
+      flex={1}
+      width="100%"
+      px={5}
+      _dark={{bg: BG_DARK}}
+      _light={{bg: BG_LIGHT}}>
       <HStack
         justifyContent={'space-between'}
         borderBottomWidth={0.8}
@@ -91,7 +78,7 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
 
       <Pressable
         onPress={() => {
-          // navigation.navigate('Manual');
+          navigation.navigate('Manual', {id: id});
         }}>
         <HStack
           justifyContent={'space-between'}
@@ -107,7 +94,7 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
       {/* otomatis */}
       <Pressable
         onPress={() => {
-          targetVersion
+          versionUpdate
             ? setShow(true)
             : AndroidToast.toast('Already in lastest version');
         }}>
@@ -119,7 +106,7 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
           borderBottomColor="gray.300">
           <Text>Check Update</Text>
           <HStack>
-            {targetVersion ? (
+            {versionUpdate ? (
               <Box
                 justifyContent={'center'}
                 alignItems="center"
@@ -140,7 +127,7 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
         title="Update Firmware"
         message={`upgrade from version ${route.params?.version} to ${targetVersion}`}
         onPress={() => {
-          MQTTClient.publish(`/${id}/data/update`, versionURL, 0, false);
+          MQTTClient.publish(`/${id}/data/ota`, 'true', 0, false);
           setShow(false);
           // navigation.navigate('Wifi');
         }}

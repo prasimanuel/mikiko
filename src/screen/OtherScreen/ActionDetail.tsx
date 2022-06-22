@@ -21,13 +21,14 @@ import {
   PRIMARY_COLOR,
   SECONDARY_COLOR,
 } from '../../utils/constanta';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import NumberPlease from 'react-native-number-please'; // delete
+import firestore from '@react-native-firebase/firestore';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
-import AuthContex, {SchedulParams} from '../../route/AuthContext';
 import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
 import {useSelector} from 'react-redux';
 import {ReducerRootState} from '../../redux/Reducer';
+import {ActionsParams} from '../../route/AuthContext';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -36,54 +37,37 @@ splitTime: [] = splitTime.split(':');
 
 var MQTTClient: IMqttClient;
 
-var channel1: Array<any> = [];
-var channel2: Array<any> = [];
-var channel3: Array<any> = [];
-var channel4: Array<any> = [];
-var channel5: Array<any> = [];
-
 const ActionDetail = ({navigation, route}: Nav) => {
   const state = useSelector((state: ReducerRootState) => state);
 
-  const {Schedule} = useContext(AuthContex);
-  const [show, showSet] = useState<boolean>(false);
+  const [value, valueSet] = useState<string>('1');
+  const [listNumber, listNumberSet] = useState(
+    Array(100)
+      .fill('')
+      .map((_, i) => ({
+        key: `${i + 1}`,
+        text: `item -${i + 1}`,
+      })),
+  );
   const [input, inputSet] = useState<string>('temp');
-  const [btn, btnSet] = useState<string>('btnone');
-  const [duration, durationSet] = useState<string>('1');
-  const [day, daySet] = useState<string>('mon');
-  const [status, statusSet] = useState<boolean>(true);
+  const [condition, conditionSet] = useState<string>('>=');
+  const [output, outputSet] = useState<string>('out1');
+  const [outState, outStateSet] = useState<string>('true');
+  const [status, statusSet] = useState<boolean>(false);
 
   const id: string = route?.params?.id;
-  const mode: string = route?.params?.mode;
 
   useLayoutEffect(() => {
     mqtt
       .createClient({
         uri: 'mqtt://broker.hivemq.com:1883',
-        clientId: `${id}schedule`,
+        clientId: `${id}actions`,
       })
       .then(function (client) {
-        client.on('message', function (msg) {
-          if (msg.topic == `/${id}/time/btnone`) {
-            channel1 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btntwo`) {
-            channel2 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btnthree`) {
-            channel3 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btnfour`) {
-            channel4 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btnfive`) {
-            channel5 = JSON.parse(msg.data);
-          }
-        });
+        client.on('message', function (msg) {});
 
         client.on('connect', function () {
           console.log('connected');
-          client.subscribe(`/${id}/time/btnone`, 0);
-          client.subscribe(`/${id}/time/btntwo`, 0);
-          client.subscribe(`/${id}/time/btnthree`, 0);
-          client.subscribe(`/${id}/time/btnfour`, 0);
-          client.subscribe(`/${id}/time/btnfive`, 0);
           MQTTClient = client;
         });
 
@@ -115,23 +99,82 @@ const ActionDetail = ({navigation, route}: Nav) => {
           _dark={{color: FONT_INACTIVE_DARK}}>
           Input
         </Text>
-        <Select
-          isDisabled={mode == 'edit' ? true : false}
-          selectedValue={input}
-          minWidth="200"
-          accessibilityLabel="Choose Button"
-          placeholder="Choose Button"
-          _selectedItem={{
-            bg: 'teal.600',
-            endIcon: <CheckIcon size="5" />,
-          }}
-          mt={1}
-          onValueChange={val => inputSet(val)}>
-          <Select.Item label="Temperature" value="temp" />
-          <Select.Item label="humidity" value="hum" />
-          <Select.Item label="Soil moisture" value="soil" />
-          <Select.Item label="PH" value="ph" />
-        </Select>
+        <VStack>
+          {/* select sensor */}
+
+          <Select
+            selectedValue={input}
+            minWidth="200"
+            accessibilityLabel="Choose Sensor"
+            placeholder="Choose Sensor"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => {
+              inputSet(val);
+              if (val == 'temp' || val == 'humi' || val == 'soil') {
+                listNumberSet(
+                  Array(100)
+                    .fill('')
+                    .map((_, i) => ({
+                      key: `${i + 1}`,
+                      text: `item -${i + 1}`,
+                    })),
+                );
+              } else {
+                listNumberSet(
+                  Array(15)
+                    .fill('')
+                    .map((_, i) => ({
+                      key: `${i + 1}`,
+                      text: `item -${i + 1}`,
+                    })),
+                );
+              }
+            }}>
+            <Select.Item label="Temperature" value="temp" />
+            <Select.Item label="humidity" value="humi" />
+            <Select.Item label="Soil moisture" value="soil" />
+            <Select.Item label="PH" value="ph" />
+          </Select>
+
+          {/* select condition */}
+
+          <Select
+            selectedValue={condition}
+            minWidth="200"
+            accessibilityLabel="Choose Condition"
+            placeholder="Choose Condition"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => conditionSet(val)}>
+            <Select.Item label="greter than" value=">=" />
+            <Select.Item label="lower than" value="<=" />
+          </Select>
+
+          {/* select value */}
+
+          <Select
+            selectedValue={value}
+            minWidth="200"
+            accessibilityLabel="Choose Value"
+            placeholder="Choose Value"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => valueSet(val)}>
+            {listNumber.map(item => {
+              return <Select.Item label={item.key} value={item.key} />;
+            })}
+          </Select>
+        </VStack>
       </HStack>
 
       {/* select output */}
@@ -147,172 +190,63 @@ const ActionDetail = ({navigation, route}: Nav) => {
           _dark={{color: FONT_INACTIVE_DARK}}>
           Output
         </Text>
-        <Select
-          isDisabled={mode == 'edit' ? true : false}
-          selectedValue={btn}
-          minWidth="200"
-          accessibilityLabel="Choose Button"
-          placeholder="Choose Button"
-          _selectedItem={{
-            bg: 'teal.600',
-            endIcon: <CheckIcon size="5" />,
-          }}
-          mt={1}
-          onValueChange={val => btnSet(val)}>
-          <Select.Item label="Switch 1" value="btnone" />
-          <Select.Item label="Switch 2" value="btntwo" />
-          <Select.Item label="Switch 3" value="btnthree" />
-          <Select.Item label="Switch 4" value="btnfour" />
-          <Select.Item label="Switch 5" value="btnfive" />
-        </Select>
-      </HStack>
 
-      {/* select day */}
+        <VStack justifyContent={'center'} alignItems="flex-end" space={3}>
+          <Select
+            selectedValue={output}
+            minWidth="200"
+            accessibilityLabel="Choose Button"
+            placeholder="Choose Button"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => outputSet(val)}>
+            <Select.Item label="Switch 1" value="out1" />
+            <Select.Item label="Switch 2" value="out2" />
+            <Select.Item label="Switch 3" value="out3" />
+            <Select.Item label="Switch 4" value="out4" />
+            <Select.Item label="Switch 5" value="out5" />
+          </Select>
 
-      <HStack
-        py={3}
-        alignItems={'center'}
-        justifyContent="space-between"
-        borderBottomWidth={0.8}
-        borderBottomColor="gray.300">
-        <Text
-          _light={{color: FONT_INACTIVE_LIGHT}}
-          _dark={{color: FONT_INACTIVE_DARK}}>
-          Every
-        </Text>
-        <Radio.Group
-          defaultValue="mon"
-          name="myRadioGroup"
-          onChange={val => {
-            daySet(val);
-          }}
-          accessibilityLabel="Pick your favorite number">
-          <HStack space={2}>
-            <Radio
-              _text={{
-                _light: {color: FONT_ACTIVE_LIGHT},
-                _dark: {color: FONT_INACTIVE_DARK},
-              }}
-              value="on"
-              colorScheme="green"
-              _dark={{backgroundColor: BG_DARK}}
-              size="sm"
-              my={1}>
-              On
-            </Radio>
-            <Radio
-              _text={{
-                _light: {color: FONT_ACTIVE_LIGHT},
-                _dark: {color: FONT_INACTIVE_DARK},
-              }}
-              value="off"
-              colorScheme="green"
-              _dark={{backgroundColor: BG_DARK}}
-              size="sm"
-              my={1}>
-              Off
-            </Radio>
-          </HStack>
-        </Radio.Group>
-      </HStack>
+          {/* output state */}
 
-      {/* radio btn duration */}
-
-      <HStack
-        py={3}
-        alignItems={'center'}
-        justifyContent="space-between"
-        borderBottomWidth={0.8}
-        borderBottomColor="gray.300">
-        <Text
-          _light={{color: FONT_INACTIVE_LIGHT}}
-          _dark={{color: FONT_INACTIVE_DARK}}>
-          Duration
-        </Text>
-        <Radio.Group
-          defaultValue="1"
-          name="myRadioGroup"
-          onChange={val => durationSet(val)}
-          accessibilityLabel="Pick your favorite number">
-          <HStack space={2}>
-            <VStack>
+          <Radio.Group
+            defaultValue={outState}
+            name="myRadioGroup"
+            onChange={val => {
+              outStateSet(val);
+            }}
+            accessibilityLabel="Pick your favorite number">
+            <HStack space={2}>
               <Radio
-                value="1"
                 _text={{
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
+                value="true"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
                 my={1}>
-                1 minutes
+                On
               </Radio>
               <Radio
                 _text={{
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="2"
+                value="false"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
                 my={1}>
-                2 minutes
+                Off
               </Radio>
-              <Radio
-                _text={{
-                  _light: {color: FONT_ACTIVE_LIGHT},
-                  _dark: {color: FONT_INACTIVE_DARK},
-                }}
-                value="3"
-                colorScheme="green"
-                _dark={{backgroundColor: BG_DARK}}
-                size="sm"
-                my={1}>
-                3 minutes
-              </Radio>
-            </VStack>
-            <VStack>
-              <Radio
-                _text={{
-                  _light: {color: FONT_ACTIVE_LIGHT},
-                  _dark: {color: FONT_INACTIVE_DARK},
-                }}
-                value="5"
-                colorScheme="green"
-                _dark={{backgroundColor: BG_DARK}}
-                size="sm"
-                my={1}>
-                5 minutes
-              </Radio>
-              <Radio
-                _text={{
-                  _light: {color: FONT_ACTIVE_LIGHT},
-                  _dark: {color: FONT_INACTIVE_DARK},
-                }}
-                value="7"
-                colorScheme="green"
-                _dark={{backgroundColor: BG_DARK}}
-                size="sm"
-                my={1}>
-                7 minutes
-              </Radio>
-              <Radio
-                _text={{
-                  _light: {color: FONT_ACTIVE_LIGHT},
-                  _dark: {color: FONT_INACTIVE_DARK},
-                }}
-                value="10"
-                colorScheme="green"
-                _dark={{backgroundColor: BG_DARK}}
-                size="sm"
-                my={1}>
-                10 minutes
-              </Radio>
-            </VStack>
-          </HStack>
-        </Radio.Group>
+            </HStack>
+          </Radio.Group>
+        </VStack>
       </HStack>
 
       {/* status */}
@@ -338,7 +272,36 @@ const ActionDetail = ({navigation, route}: Nav) => {
 
       {/* button save */}
 
-      <Button mt={ITEM_HEIGHT_H3} bg={PRIMARY_COLOR} onPress={() => {}}>
+      <Button
+        mt={ITEM_HEIGHT_H3}
+        bg={PRIMARY_COLOR}
+        onPress={() => {
+          var newSchedule: ActionsParams = {
+            if: input,
+            output: output,
+            value: Number(value),
+            con: condition,
+            state: outState == 'true' ? true : false,
+            status: status,
+            id: Math.random().toString(),
+          };
+
+          firestore()
+            .collection(
+              state.auth.email !== null ? state.auth.email : state.auth.uid,
+            )
+            .doc(id)
+            .update({
+              actions: firestore.FieldValue.arrayUnion(newSchedule),
+            })
+            .then(() => {
+              MQTTClient.publish(`/${id}/data/actions`, 'true', 0, true);
+            });
+
+          navigation.navigate('Action', {
+            id: id,
+          });
+        }}>
         save
       </Button>
     </Box>

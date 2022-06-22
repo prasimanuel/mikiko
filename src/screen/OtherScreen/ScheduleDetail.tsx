@@ -37,12 +37,6 @@ splitTime: [] = splitTime.split(':');
 
 var MQTTClient: IMqttClient;
 
-var channel1: Array<any> = [];
-var channel2: Array<any> = [];
-var channel3: Array<any> = [];
-var channel4: Array<any> = [];
-var channel5: Array<any> = [];
-
 const ScheduleDetail = ({navigation, route}: Nav) => {
   const state = useSelector((state: ReducerRootState) => state);
 
@@ -51,9 +45,9 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
   const [time, timeSet] = useState<string>(
     `${splitTime[0]}${splitTime[1]}:${splitTime[3]}${splitTime[4]}`,
   );
-  const [btn, btnSet] = useState<string>('out1');
+  const [output, outputSet] = useState<string>('out1');
   const [duration, durationSet] = useState<string>('1');
-  const [day, daySet] = useState<string>('7');
+  const [every, everySet] = useState<string>('7');
   const [status, statusSet] = useState<boolean>(true);
 
   const id: string = route?.params?.id;
@@ -65,27 +59,10 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
         clientId: `${id}schedule`,
       })
       .then(function (client) {
-        client.on('message', function (msg) {
-          if (msg.topic == `/${id}/time/btnone`) {
-            channel1 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btntwo`) {
-            channel2 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btnthree`) {
-            channel3 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btnfour`) {
-            channel4 = JSON.parse(msg.data);
-          } else if (msg.topic == `/${id}/time/btnfive`) {
-            channel5 = JSON.parse(msg.data);
-          }
-        });
+        client.on('message', function (msg) {});
 
         client.on('connect', function () {
           console.log('connected');
-          client.subscribe(`/${id}/time/btnone`, 0);
-          client.subscribe(`/${id}/time/btntwo`, 0);
-          client.subscribe(`/${id}/time/btnthree`, 0);
-          client.subscribe(`/${id}/time/btnfour`, 0);
-          client.subscribe(`/${id}/time/btnfive`, 0);
           MQTTClient = client;
         });
 
@@ -150,7 +127,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           Button
         </Text>
         <Select
-          selectedValue={btn}
+          selectedValue={output}
           minWidth="200"
           accessibilityLabel="Choose Button"
           placeholder="Choose Button"
@@ -159,7 +136,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
             endIcon: <CheckIcon size="5" />,
           }}
           mt={1}
-          onValueChange={val => btnSet(val)}>
+          onValueChange={val => outputSet(val)}>
           <Select.Item label="Switch 1" value="out1" />
           <Select.Item label="Switch 2" value="out2" />
           <Select.Item label="Switch 3" value="out3" />
@@ -168,7 +145,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
         </Select>
       </HStack>
 
-      {/* radio btn duration */}
+      {/* radio output duration */}
 
       <HStack
         py={3}
@@ -267,7 +244,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
         </Radio.Group>
       </HStack>
 
-      {/* select day */}
+      {/* select every */}
 
       <HStack
         py={3}
@@ -284,7 +261,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           defaultValue="7"
           name="myRadioGroup"
           onChange={val => {
-            daySet(val);
+            everySet(val);
           }}
           accessibilityLabel="Pick your favorite number">
           <HStack space={2}>
@@ -420,9 +397,9 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
         bg={PRIMARY_COLOR}
         onPress={() => {
           var newSchedule: SchedulParams = {
-            output: btn,
+            output: output,
             duration: Number(duration),
-            every: Number(day),
+            every: Number(every),
             status: status,
             id: Math.random().toString(),
             time,
@@ -439,10 +416,12 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
               schedule: firestore.FieldValue.arrayUnion(newSchedule),
             })
             .then(() => {
-              console.log('User added!');
+              MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
             });
 
-          navigation.goBack();
+          navigation.navigate('Schedule', {
+            id: id,
+          });
         }}
         _text={{
           color: 'black',
