@@ -1,26 +1,14 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {
-  Box,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Pressable,
-  Stagger,
-  Text,
-  useDisclose,
-} from 'native-base';
+import {Box, HStack, Icon, Image, Pressable, Text} from 'native-base';
 import React from 'react';
 import Share from 'react-native-share';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {BG_LIGHT, ITEM_HEIGHT_H1, ITEM_HEIGHT_H2} from '../../utils/constanta';
+import {BG_LIGHT, ITEM_HEIGHT_H1} from '../../utils/constanta';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
 const SharedImageScreen = ({navigation, route}: Nav) => {
-  const {isOpen, onToggle} = useDisclose();
-
   const uri: string = route?.params?.uri;
   const base64: string = route?.params?.base64;
 

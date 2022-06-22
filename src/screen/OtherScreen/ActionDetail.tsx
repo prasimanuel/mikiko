@@ -3,7 +3,6 @@ import {
   Button,
   CheckIcon,
   HStack,
-  Pressable,
   Radio,
   Select,
   Switch,
@@ -21,7 +20,6 @@ import {
   PRIMARY_COLOR,
   SECONDARY_COLOR,
 } from '../../utils/constanta';
-import NumberPlease from 'react-native-number-please'; // delete
 import firestore from '@react-native-firebase/firestore';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';

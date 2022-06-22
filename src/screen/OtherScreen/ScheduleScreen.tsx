@@ -1,22 +1,6 @@
-import {
-  Box,
-  Button,
-  Fab,
-  FlatList,
-  HStack,
-  Icon,
-  Pressable,
-  Switch,
-  Text,
-  VStack,
-} from 'native-base';
+import {Box, Fab, HStack, Icon, Switch, Text, VStack} from 'native-base';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {
-  BG_DARK,
-  BG_LIGHT,
-  PRIMARY_COLOR,
-  TAB_BAR_HEIGHT,
-} from '../../utils/constanta';
+import {BG_DARK, BG_LIGHT, PRIMARY_COLOR} from '../../utils/constanta';
 import firestore from '@react-native-firebase/firestore';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
